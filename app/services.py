@@ -5,8 +5,8 @@ import pytesseract
 from pdf2image import convert_from_path
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
-from app.models import DocumentData
+from pydantic.v1 import BaseModel, Field
+from .models import DocumentData
 
 load_dotenv()
 

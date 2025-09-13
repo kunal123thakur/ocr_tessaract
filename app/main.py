@@ -1,20 +1,20 @@
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from fastapi import FastAPI, Request, File, UploadFile, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from app.services import process_image, process_pdf, get_structured_data
-from app.utils import save_upload_file
-from app.models import DocumentData
+from .services import process_image, process_pdf, get_structured_data
+from .utils import save_upload_file
+from .models import DocumentData
+import os
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="ocr/app/static"), name="static")
+# Get the absolute path to the current file's directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-templates = Jinja2Templates(directory="ocr/app/templates")
+app.mount("/static", StaticFiles(directory=os.path.join(current_dir, "static")), name="static")
+
+templates = Jinja2Templates(directory=os.path.join(current_dir, "templates"))
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -34,7 +34,3 @@ async def upload_file(file: UploadFile = File(...)):
 
     structured_data = get_structured_data(file.filename, text)
     return structured_data
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
