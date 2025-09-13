@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Document Extractor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>OCR Document Extractor</h1>
+        <p>Upload an image or PDF to extract structured data.</p>
+        <form id="upload-form" action="/upload/" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="file-input" required>
+            <button type="submit">Extract Data</button>
+        </form>
+        <div id="result-container" style="display: none;">
+            <h2>Extracted Data</h2>
+            <pre id="result-json"></pre>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

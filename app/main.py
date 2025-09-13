@@ -1,0 +1,40 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from fastapi import FastAPI, Request, File, UploadFile, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from app.services import process_image, process_pdf, get_structured_data
+from app.utils import save_upload_file
+from app.models import DocumentData
+
+app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="ocr/app/static"), name="static")
+
+templates = Jinja2Templates(directory="ocr/app/templates")
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.post("/upload/", response_model=DocumentData)
+async def upload_file(file: UploadFile = File(...)):
+    file_path = save_upload_file(file)
+    file_extension = file.filename.split(".")[-1].lower()
+
+    if file_extension in ["png", "jpg", "jpeg"]:
+        text = process_image(file_path)
+    elif file_extension == "pdf":
+        text = process_pdf(file_path)
+    else:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
+
+    structured_data = get_structured_data(file.filename, text)
+    return structured_data
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
