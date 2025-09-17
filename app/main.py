@@ -2,10 +2,11 @@ from fastapi import FastAPI, Request, File, UploadFile, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from .services import process_image, process_pdf, get_structured_data
-from .utils import save_upload_file
-from .models import DocumentData
+from app.services import process_image, process_pdf, get_structured_data
+from app.utils import save_upload_file
+from app.models import DocumentData
 import os
+import uvicorn
 
 app = FastAPI()
 
@@ -34,3 +35,6 @@ async def upload_file(file: UploadFile = File(...)):
 
     structured_data = get_structured_data(file.filename, text)
     return structured_data
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
