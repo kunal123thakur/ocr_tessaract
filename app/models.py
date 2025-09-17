@@ -11,3 +11,6 @@ class DocumentData(BaseModel):
     date_of_birth: Optional[str] = None
     school_name: Optional[str] = None
     result: Optional[str] = None
+
+class ChatRequest(BaseModel):
+    text: str
